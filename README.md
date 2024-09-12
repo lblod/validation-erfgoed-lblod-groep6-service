@@ -1,6 +1,6 @@
-# Mu Python template
+# Validation service
 
-Template for [mu.semte.ch](http://mu.semte.ch)-microservices written in Python3. Based on the [Flask](https://palletsprojects.com/p/flask/)-framework.
+Validations service written in Python3. Based on the [Flask](https://palletsprojects.com/p/flask/)-framework.
 
 ## Quickstart
 
