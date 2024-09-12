@@ -43,31 +43,13 @@ def test():
 @app.route('/validate', methods=['GET'])
 def index():
     try:	
-        my_person = "http://example.com/me"
-        query_template = Template("""
-        PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-
-        SELECT ?name
-        WHERE {
-            $person a foaf:Person ;
-                foaf:firstName ?name .
-        }
-        """)
-        query_string = query_template.substitute(person=sparql_escape_uri(my_person))
-        query_result = query(query_string)
-        return query_result
-        #return(request.values['id'])
+       
+        return("validating " + request.values['id'])
     
     except:
         service.logger.error(traceback.format_exc())
         return {'error': 'General exception'}    
         
-        
-
-
-
-
 #######################
 ## Start Application ##
 #######################
