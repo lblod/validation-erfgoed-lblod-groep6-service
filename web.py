@@ -3,15 +3,16 @@ from flask import Flask, request
 import traceback
 from importlib import import_module
 import builtins
-from rdflib.namespace import Namespace
 from escape_helpers import sparql_escape
 
+from validate import validate
+import helpers
 from string import Template
-from helpers import query, logger
+from helpers import query
 from escape_helpers import sparql_escape_uri
 
 # WSGI variable name used by the server
-service = Flask(__name__)
+app = Flask(__name__)
 
 ##################
 ## Vocabularies ##
@@ -20,12 +21,12 @@ mu = Namespace('http://mu.semte.ch/vocabularies/')
 mu_core = Namespace('http://mu.semte.ch/vocabularies/core/')
 mu_ext = Namespace('http://mu.semte.ch/vocabularies/ext/')
 
+
 SERVICE_RESOURCE_BASE = 'http://mu.semte.ch/services/'
 
 builtins.app = app
 builtins.helpers = helpers
 builtins.sparql_escape = sparql_escape
-
 
 # Import the app from the service consuming the template
 app_file = os.environ.get('APP_ENTRYPOINT')
@@ -33,7 +34,7 @@ try:
     module_path = 'ext.app.{}'.format(app_file)
     import_module(module_path)
 except Exception:
-    helpers.logger.exception('Exception raised when importing app code')
+    app.logger.exception('Exception raised when importing app code')
 
 
 @app.route('/')
@@ -43,16 +44,18 @@ def test():
 @app.route('/validate', methods=['GET'])
 def index():
     try:	
-       
-        return("validating " + request.values['id'])
-    
+        besluit_id = request.values['id']
+        aanvraag_text = request.value['text']
+        app.logger.debug("Validating " + request.values['id'] + "...")
+        return(validate(besluit_id, aanvraag_text))
     except:
-        service.logger.error(traceback.format_exc())
+        app.logger.error(traceback.format_exc())
         return {'error': 'General exception'}    
         
 #######################
 ## Start Application ##
 #######################
 if __name__ == '__main__':
+
     debug = os.environ.get('MODE') == "development"
-    service.run(debug=debug, host='0.0.0.0', port=80)
+    app.run(debug=debug, host='0.0.0.0', port=80)
